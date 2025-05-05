@@ -1,0 +1,27 @@
+#Ignore build dirs
+/build/
+**/build/
+
+#ignore any vs stuff made by cmake
+.vscode/
+.vs/
+
+#ignore cmake congifs
+
+CMakeCache.txt
+CMakeFiles/
+CMakeLists.txt.user
+
+#ignore temp files from nvim
+*.swp
+*.swo
+
+#ignore os-specific files
+Thumbs.db
+.DS_Store
+Desktop.ini
+
+#ignore other misc stuff
+*.user
+*.log
+
