@@ -7,6 +7,7 @@ set(CMAKE_PREFIX_PATH "C:/vcpkg/installed/x64-windows")
 find_package(SDL3 REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(OpenGL REQUIRED)
+include_directories(include)
 
 file(GLOB SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
