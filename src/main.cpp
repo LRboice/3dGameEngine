@@ -20,7 +20,7 @@ int main (int argc, char* argv[])
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24); 
 
 
-	SDL_Window* window = SDL_CreateWindow("Bagel3D", 1280, 720,SDL_WINDOW_OPENGL);
+	SDL_Window* window = SDL_CreateWindow("Bagel3D", 1280, 720,SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 	if(window==NULL)
   {
     SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not create window: %s\n", SDL_GetError()); 
@@ -39,10 +39,16 @@ int main (int argc, char* argv[])
   glViewport(0,0,1280,720); 
   
   float vertices[]={
-    -0.5f, -0.5f, 0.0f,
+    0.5f, 0.5f, 0.0f,
     0.5f, -0.5f, 0.0f, 
-    0.0f, 0.5f, 0.0f
+    -0.5f,-0.5f, 0.0f,
+    -0.5f, 0.5f, 0.0f
   };
+
+  unsigned int indices[]={
+    0, 1, 3,
+    1, 2, 3
+  }; 
 
   Shader vertexShader("../assets/shaders/passthrough.vs", shader_type::vertex); 
   Shader fragmentShader("../assets/shaders/passthrough.fs", shader_type::fragment); 
@@ -53,13 +59,19 @@ int main (int argc, char* argv[])
 
 
   ShaderRunner shaderRunner(vertexShader, fragmentShader); 
-  GLuint vbo, vao;
+  GLuint vbo, vao, ebo;
+
   glGenVertexArrays(1, &vao); 
   glGenBuffers(1, &vbo);
-  glBindVertexArray(vao); 
-  glBindBuffer(GL_ARRAY_BUFFER, vbo); 
+  glGenBuffers(1, &ebo); 
+  glBindVertexArray(vao);
+
+  glBindBuffer(GL_ARRAY_BUFFER, vbo);  
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); 
   
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo); 
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW); 
+
   glEnableVertexAttribArray(0); 
   glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE, 3 * sizeof(float), (void*)0); 
   
@@ -72,14 +84,13 @@ int main (int argc, char* argv[])
       if(event.type == SDL_EVENT_QUIT){
         done = true;  
       }
-      SDL_UpdateWindowSurface(window); 
     }  
     glClearColor(0,0,0,1.0f); 
     glClear(GL_COLOR_BUFFER_BIT);
     shaderRunner.use(); 
     glBindVertexArray(vao); 
-    glDrawArrays(GL_TRIANGLES, 0 , 3); 
-
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); 
+    glBindVertexArray(0); 
     SDL_GL_SwapWindow(window);
   }  
   glDeleteVertexArrays(1, &vao); 
